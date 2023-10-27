@@ -117,37 +117,88 @@ const ListItem = ({ data, dispatcher }) => {
     style.buttonContainer += " hidden";
     style.p += " line-through";
   }
-  const [onEdit, setOnEdit] = useState(false)
-  const [input, setInput]  = useState(data.todo)
-  
-  let todoText  =<p className={style.p}>isi lis</p> 
-  if(onEdit){
-     todoText = <input value={data.todo} onChange={e=>setInput(e.target.value)} />  
+  const [onEdit, setOnEdit] = useState(false);
+  const [input, setInput] = useState(data.todo);
+  const [modal, setModal] = useState({
+    component: (
+      <Modal
+        ok={deleted}
+        cancel={cancelModal}
+        title={"Peringatan Hapus"}
+        description={"Apakah anda yakin ingin menghapus todo?"}
+      />
+    ),
+    active: false,
+  });
+  let todoText = <p className={style.p}>isi lis</p>;
+  if (onEdit) {
+    todoText = (
+      <input value={data.todo} onChange={(e) => setInput(e.target.value)} />
+    );
   }
-  
-  const Deleted = () => {
-    dispatcher({id:data.id, method:"DELETE"})
+  const cancelModal = () => {
+    setModal((prev) => ({ ...prev, active: !prev.active }));
+  };
+  const deleted = () => {
+    dispatcher({ id: data.id, method: "DELETE" });
+  };
+  const edited = () => {
+    dispatcher({ id: data.id, method: "COMPLETED", todo: input });
+  };
+  const completed = ()=>{
+    dispatcher({id:data.id, method: "COMPLETED", todo:data.todo})
   }
-  const Edited = () => {
-    dispatcher({id:data.id, method:"COMPLETED", todo:input})
-  }
-  const checkboxHandler = () => {
-    setOnEdit(!onEdit)
+  const editHandler = () => {
+    setOnEdit(prev => !prev) 
+    // 
+    if(!onEdit) edited()
   }
   return (
+
     <>
+    {modal.active && modal.component}
       <li>
-        <input checked={data.status} onClick={checkboxHandler}  type="checkbox" className={style.input} />
+        <input
+          checked={data.status}
+          onClick={completed}
+          type="checkbox"
+          className={style.input}
+        />
         {todoText}
         <div className={style.buttonContainer}>
-          <Button className={style.button}>
-            <img src="" />
+          <Button onClick={editHandler} className={style.button}>
+            <img src="" /> 
+            {/* nnti pasang gambar */}
           </Button>
           <Button className={style.button}>
             <img src="" />
           </Button>
         </div>
       </li>
+    </>
+  );
+};
+
+const Modal = ({ ok, cancel, title, description }) => {
+  const style = {
+    container:
+      " w-5/12 h-32 grid grid-rows-4 rounded-md absolute top-1/2 left-1/2 -translate-x-1/2",
+    p: " text-center row-span-2",
+    title: " text-4xl",
+    button: "  py-1 px-2",
+    buttonWrapper: " flex justify-end gap-5 p-3 border-1 border-black",
+  };
+  return (
+    <>
+      <div className={style.container}>
+        <h3 className={style.title}>{title}</h3>
+        <p className={style.p}>{description}</p>
+
+        <div className={style.buttonWrapper}>
+          <Button className={style.button + " bg-rose-600"} onClick={cancel} />
+          <Button className={style.button + " bg-green-500"} onClick={ok} />
+        </div>
+      </div>
     </>
   );
 };
