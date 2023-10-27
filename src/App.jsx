@@ -7,7 +7,7 @@ function App() {
     <>
       <h1>What's the plan for today?</h1>
       <div>
-        <Button className="bg-red-300"  />
+        <Button className="bg-red-300" />
       </div>
 
       <div>
@@ -25,37 +25,46 @@ function App() {
 
 export default App;
 
-const Input = () => {
-  const [input, setIput] = useState();
+const InputForm = (onAdd) => {
+  const style = {
+    button: "py-1 px-2 text-white",
+    input: "py-1 px-2 w-full",
+  };
+
+  const [input, setInput] = useState("");
   const inputHandler = (e) => {
-    setIput(e.targer.value);
+    setInput(e.target.value);
   };
   return (
     <>
       <input
+        type="text"
+        placeholder="What to do..."
+        style={style.input}
         onChange={(e) => inputHandler(e)}
         value={input}
-        type="text"
-        placeholder="What to do"
       />
+
+      <Button text="Add" onClick={(e) => onAdd(e)} className={style.button} />
     </>
   );
 };
 
 const Button = ({
   onClick,
-  width = "200px",
-  height = "15%",
+  width = "15%",
+  height = "100%",
   className = "",
+  text = "",
 }) => {
   const style = "bg-[#6558f5] ";
   return (
     <>
       <button
         className={style + className}
-        style={{ width:  width , height:  height  }}
+        style={{ width: width, height: height }}
         onClick={(e) => onClick(e)}>
-        Add
+        {text}
       </button>
     </>
   );
