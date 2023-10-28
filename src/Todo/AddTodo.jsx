@@ -10,9 +10,16 @@ export const AddTodo = ({ todoDispatcher }) => {
   const inputHandler = (e) => {
     setInput(e.target.value);
   };
-  const onAdd = () => {
+  const onAdd = (e) => {
     todoDispatcher({ type: "ADD", payload: { todo: input } });
+    e.target.blur();
+    setInput("");
   };
+  function onEnter(e) {
+    if (e.key === "Enter") {
+      onAdd(e);
+    }
+  }
   return (
     <>
       <input
@@ -20,6 +27,7 @@ export const AddTodo = ({ todoDispatcher }) => {
         placeholder="What to do..."
         className={style.input}
         onChange={(e) => inputHandler(e)}
+        onKeyDown={(e) => onEnter(e)}
         value={input}
       />
 

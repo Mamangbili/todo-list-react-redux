@@ -2,16 +2,17 @@ import { useState } from "react";
 import Button from "./Button";
 import Modal from "./Modal";
 
-const style = {
-  buttonContainer: " flex justify-center items-center",
-  list: "grid grid-cols-11",
-  p: " col-span-8 col-start-2",
-  input: "col-start-1",
-};
-
 export const ListItem = ({ data, dispatcher }) => {
   const status = data.status === "COMPLETED" ? true : false;
-
+  //style di dalam agar hasil mutate kembali ke awal ketika render baru
+  const style = {
+    buttonContainer: " grid grid-cols-2 col-span-2 gap-2 ",
+    list: "grid grid-cols-11 border-slate-400 border-2 p-2 gap-2 h-14 box-border",
+    todo: " col-span-8 col-start-2 my-auto pl-2 ",
+    checkbox: "col-start-1 outline-1 h-full w-full",
+    button: " w-full h-full bg-white",
+    inputText: " decoration-0 outline-0 border-2   px-1 border-slate-500 ",
+  };
   //states
   const [onEdit, setOnEdit] = useState(false);
   const [input, setInput] = useState(data.todo);
@@ -27,16 +28,34 @@ export const ListItem = ({ data, dispatcher }) => {
     active: false,
   });
   //conditional rendering
-  if (status) {
-    style.buttonContainer += " hidden";
-    style.p += " line-through";
-  }
-  let todoText = <p className={style.p}>{data.todo}</p>;
-  if (onEdit) {
-    todoText = <input value={input} onChange={(e) => inputHandler(e)} />;
-  }
+  //menyebabkan mutate objek
 
+  let todoText = <p className={style.todo}>{data.todo}</p>;
+  if (onEdit && !status) {
+    todoText = (
+      <input
+        autoFocus
+        className={style.todo + style.inputText}
+        value={input}
+        onChange={(e) => inputHandler(e)}
+        onKeyDown={(e) => onEnter(e)}
+      />
+    );
+  }
+  if (status) {
+    //ini masih bisa karena Component dipanggil ketika render
+    style.buttonContainer += " hidden";
+    //ini harus dibuat ulang karena Component sudah dibuat sebelumnya sehingga sulit untuk di mutate
+    style.todo += " line-through ";
+    todoText = <p className={style.todo}>{data.todo}</p>;
+  }
+  console.log(todoText);
+  console.log(style.todo);
   //method
+  //pake fn biasa agar bisa di hoisting
+  function onEnter(e) {
+    if (e.key === "Enter") editHandler();
+  }
   function cancelModal() {
     setModal((prev) => ({ ...prev, active: !prev.active }));
   }
@@ -61,6 +80,7 @@ export const ListItem = ({ data, dispatcher }) => {
     // masuk dari mode edit ke saved. pake value sebelum update render
     if (savedNow) edited();
   }
+
   function deleteHandler(e) {
     setModal((prev) => ({ ...prev, active: true }));
   }
@@ -76,20 +96,20 @@ export const ListItem = ({ data, dispatcher }) => {
           checked={status}
           onChange={revert}
           type="checkbox"
-          className={style.input}
+          className={style.checkbox}
         />
         {todoText}
         <div className={style.buttonContainer}>
           <Button onClick={editHandler} className={style.button}>
             <img
               src="https://icons-for-free.com/download-icon-pencil-1324438838284694541_256.ico"
-              className="w-5 h-5"
+              className="w-full"
             />
           </Button>
           <Button className={style.button} onClick={deleteHandler}>
             <img
               src="https://www.shareicon.net/data/256x256/2016/01/19/705545_recycle-bin_512x512.png"
-              className="w-12 h-5"
+              className="w-full"
             />
           </Button>
         </div>

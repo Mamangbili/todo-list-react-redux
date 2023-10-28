@@ -9,7 +9,6 @@ const todoAdd = (state, payload) => {
     return [...state, { ...payload, id , status:"ACTIVE"}]
 }
 
-
 const revert = status => status === "COMPLETED" ? "ACTIVE" : "COMPLETED"
 const todoRevert = (state, payload) => {
     return state.map(todo => todo.id === payload.id ? { ...payload, status: revert(payload.status) } : todo)
