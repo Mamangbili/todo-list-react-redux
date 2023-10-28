@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import Button from "./Button";
 import Modal from "./Modal";
 
-export const ListItem = ({ data, dispatcher }) => {
+export const ListItem = ({ data, action }) => {
   const status = data.status === "COMPLETED" ? true : false;
   //style di dalam agar hasil mutate kembali ke awal ketika render baru
   const style = {
     buttonContainer: " grid grid-cols-2 col-span-2 gap-2 ",
-    list: "grid grid-cols-11 border-slate-400 border-2 p-2 gap-2 h-14 box-border",
+    list: "grid grid-cols-11 border-slate-400 border-2 p-2 gap-2 h-14 box-border transition-all duration-1000 opacity-100",
     todo: " col-span-8 col-start-2 my-auto pl-2 ",
     checkbox: "col-start-1 outline-1 h-full w-full",
     button: " w-full h-full bg-white",
@@ -59,19 +59,13 @@ export const ListItem = ({ data, dispatcher }) => {
     setModal((prev) => ({ ...prev, active: !prev.active }));
   }
   function deleted() {
-    dispatcher({ payload: { id: data.id }, type: "DELETE" });
+    action.DELETE({ id: data.id });
   }
   function edited() {
-    dispatcher({
-      payload: { id: data.id, todo: input, status: data.status },
-      type: "UPDATE",
-    });
+    action.UPDATE({ id: data.id, todo: input, status: data.status });
   }
   function revert() {
-    dispatcher({
-      payload: { id: data.id, todo: data.todo, status: data.status },
-      type: "REVERT_STATUS",
-    });
+    action.REVERT_STATUS({ id: data.id, todo: data.todo, status: data.status });
   }
   function editHandler() {
     setOnEdit((prev) => !prev);
@@ -123,5 +117,5 @@ ListItem.propTypes = {
     status: PropTypes.oneOf(["ACTIVE", "COMPLETED"]),
     todo: PropTypes.string.isRequired,
   }).isRequired,
-  dispatcher: PropTypes.func.isRequired,
+  action: PropTypes.object.isRequired,
 };
