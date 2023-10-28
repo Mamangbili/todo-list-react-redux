@@ -1,9 +1,9 @@
 import Button from "./Button";
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 export const Modal = ({ ok, cancel, title, description }) => {
   const style = {
     container:
-      " w-5/12 h-32 grid grid-rows-4 rounded-xl  fixed m-auto bg-slate-300 p-2 ",
+      " w-5/12 h-32 grid grid-rows-4 rounded-xl -translate-x-1/2 left-1/2 fixed m-auto bg-slate-300 p-2 ",
     p: " text-center row-span-2 p-2",
     title: " text-2xl border-b-2 border-slate-400 box-border ",
     button: "  py-1 px-2 rounded-sm",
@@ -32,9 +32,8 @@ export const Modal = ({ ok, cancel, title, description }) => {
 };
 export default Modal;
 Modal.propTypes = {
-  title : PropTypes.string.isRequired,
-  description : PropTypes.string.isRequired,
-  ok : PropTypes.func.isRequired,
-  cancel : PropTypes.func.isRequired
-  
-}
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  ok: PropTypes.func.isRequired,
+  cancel: PropTypes.func.isRequired,
+};
