@@ -11,13 +11,13 @@ const style = {
 };
 
 function App() {
-  const { todo, dispatcher } = useTodo();
+  const { todo, todoMethod } = useTodo();
   return (
     <>
       <div className={style.container}>
         <h1 className={style.title}>What's the plan for today?</h1>
         <div className="flex gap-5">
-          <AddTodo todo={todo} todoDispatcher={dispatcher} />
+          <AddTodo todo={todo} action={todoMethod} />
         </div>
         <FilterProvider>
           <ButtonFilter />

@@ -14,5 +14,5 @@ export const useTodo = () => {
     REVERT_STATUS: actionMethodSelect("REVERT_STATUS"),
   };
 
-  return { todo, dispatcher, todoMethod };
+  return { todo,  todoMethod };
 };

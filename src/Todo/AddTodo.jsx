@@ -1,18 +1,18 @@
 import { useState } from "react";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 import Button from "./Button";
 
 const style = {
   button: "py-1 px-2 text-white rounded-sm",
   input: "py-1 px-2 w-full outline-none border-slate-400 rounded-sm border-2",
 };
-export const AddTodo = ({ todoDispatcher }) => {
+export const AddTodo = ({ action }) => {
   const [input, setInput] = useState("");
   const inputHandler = (e) => {
     setInput(e.target.value);
   };
   const onAdd = (e) => {
-    todoDispatcher({ type: "ADD", payload: { todo: input } });
+    action.ADD({ todo: input });
     e.target.blur();
     setInput("");
   };
@@ -40,5 +40,5 @@ export const AddTodo = ({ todoDispatcher }) => {
 };
 
 AddTodo.propTypes = {
-todoDispatcher: PropTypes.func.isRequired
-}
+  action: PropTypes.object.isRequired,
+};
