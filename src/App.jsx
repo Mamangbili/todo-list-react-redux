@@ -1,47 +1,54 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unescaped-entities */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { FilterProvider, useFilter } from "./context/filter-context";
+import { useDispatch, useSelector } from "react-redux";
+import useTodo from "./storage/useTodo";
+import TodoList from "./Todo/List/ListTodo";
 
-const buttonStatusContext = createContext();
 function App() {
+  const { todo, dispatcher } = useTodo();
+  const style = {
+    container : "grid grid-cols-1 w-96 border-2 border-black mx-auto gap-2 p-2 ",
+    title : "text-2xl text-center font-semibold"
+  }
   return (
     <>
-      <h1>What's the plan for today?</h1>
-      <div>
-        <Button className="bg-red-300" />
+      <div className={style.container}>
+        <h1 className={style.title}>What's the plan for today?</h1>
+        <div className="flex gap-5">
+          <AddTodo todo={todo} todoDispatcher={dispatcher} />
+        </div>
+        <FilterProvider>
+          <ButtonFilter />
+          <TodoList />
+        </FilterProvider>
       </div>
-
-      <div>
-        <button></button>
-        <button></button>
-        <button></button>
-      </div>
-
-      <ul>
-        <li></li>
-      </ul>
     </>
   );
 }
 
 export default App;
 
-const InputForm = (onAdd) => {
+const AddTodo = ({ todoDispatcher }) => {
   const style = {
-    button: "py-1 px-2 text-white",
-    input: "py-1 px-2 w-full",
+    button: "py-1 px-2 text-white rounded-sm",
+    input: "py-1 px-2 w-full outline-none border-slate-400 rounded-sm border-2",
   };
 
   const [input, setInput] = useState("");
   const inputHandler = (e) => {
     setInput(e.target.value);
   };
+  const onAdd = () => {
+    todoDispatcher({ type: "ADD", payload: { todo: input } });
+  };
   return (
     <>
       <input
         type="text"
         placeholder="What to do..."
-        style={style.input}
+        className={style.input}
         onChange={(e) => inputHandler(e)}
         value={input}
       />
@@ -73,42 +80,46 @@ const Button = ({
   );
 };
 
-const ButtonStatus = () => {
-  const [status, setStatus] = useContext(buttonStatusContext);
+const ButtonFilter = () => {
+  const { filterState, setFilterState } = useFilter();
   const style = {
     container: "flex gap-5",
-    button: "px-2 py-1 text-white bg-slate-600 ",
+    button:
+      "px-4 !w-auto py-1 text-white bg-slate-600 text-xs transition-all rounded-xl sm:text-sm",
   };
   return (
     <>
       <div className={style.container}>
         <Button
-          text="ALL"
+          onClick={(e) => setFilterState((prev) => "ALL")}
           className={`${style.button} + ${
-            status === "ALL" ? "bg-green-600 " : ""
-          }`}
-        />
+            filterState === "ALL" ? " !bg-green-600 " : ""
+          }`}>
+          All
+        </Button>
         <Button
-          text="ACTIVE"
+          onClick={(e) => setFilterState((prev) => "COMPLETED")}
           className={`${style.button} + ${
-            status === "ACTIVE" ? "bg-green-600 " : ""
-          }`}
-        />
+            filterState === "COMPLETED" ? " !bg-green-600 " : ""
+          }`}>
+          COMPLETED
+        </Button>
         <Button
-          text="COMPLETED"
+          onClick={(e) => setFilterState((prev) => "ACTIVE")}
           className={`${style.button} + ${
-            status === "COMPLETED" ? "bg-green-600 " : ""
-          }`}
-        />
+            filterState === "ACTIVE" ? " !bg-green-600 " : ""
+          }`}>
+          ACTIVE
+        </Button>
       </div>
     </>
   );
 };
 
-const ListItem = ({ data, dispatcher }) => {
+export const ListItem = ({ data, dispatcher }) => {
   const status = data.status === "COMPLETED" ? true : false;
   const style = {
-    buttonContainer: " flex justify-center grid-s items-center",
+    buttonContainer: " flex justify-center items-center",
     list: "grid grid-cols-11",
     p: " col-span-8 col-start-2",
     input: "col-start-1",
@@ -119,6 +130,32 @@ const ListItem = ({ data, dispatcher }) => {
   }
   const [onEdit, setOnEdit] = useState(false);
   const [input, setInput] = useState(data.todo);
+
+  const cancelModal = () => {
+    setModal((prev) => ({ ...prev, active: !prev.active }));
+  };
+  const deleted = () => {
+    dispatcher({ payload: { id: data.id }, type: "DELETE" });
+  };
+  const edited = () => {
+    dispatcher({
+      payload: { id: data.id, todo: input, status: data.status },
+      type: "UPDATE",
+    });
+  };
+  const revert = () => {
+    dispatcher({
+      payload: { id: data.id, todo: data.todo, status: data.status },
+      type: "REVERT_STATUS",
+    });
+  };
+  const editHandler = () => {
+    setOnEdit((prev) => !prev);
+    const savedNow = onEdit;
+    // masuk dari mode edit ke saved. pake value sebelum update render
+    if (savedNow) edited();
+    //
+  };
   const [modal, setModal] = useState({
     component: (
       <Modal
@@ -130,48 +167,39 @@ const ListItem = ({ data, dispatcher }) => {
     ),
     active: false,
   });
-  let todoText = <p className={style.p}>isi lis</p>;
+  const deleteHandler = (e) => {
+    setModal((prev) => ({ ...prev, active: true }));
+  };
+  const inputHandler = (e) => {
+    setInput((prev) => e.target.value);
+  };
+  let todoText = <p className={style.p}>{data.todo}</p>;
   if (onEdit) {
-    todoText = (
-      <input value={data.todo} onChange={(e) => setInput(e.target.value)} />
-    );
-  }
-  const cancelModal = () => {
-    setModal((prev) => ({ ...prev, active: !prev.active }));
-  };
-  const deleted = () => {
-    dispatcher({ id: data.id, method: "DELETE" });
-  };
-  const edited = () => {
-    dispatcher({ id: data.id, method: "COMPLETED", todo: input });
-  };
-  const completed = ()=>{
-    dispatcher({id:data.id, method: "COMPLETED", todo:data.todo})
-  }
-  const editHandler = () => {
-    setOnEdit(prev => !prev) 
-    // 
-    if(!onEdit) edited()
+    todoText = <input value={input} onChange={(e) => inputHandler(e)} />;
   }
   return (
-
     <>
-    {modal.active && modal.component}
-      <li>
+      {modal.active && modal.component}
+      <li className={style.list}>
         <input
-          checked={data.status}
-          onClick={completed}
+          checked={status}
+          onChange={revert}
           type="checkbox"
           className={style.input}
         />
         {todoText}
         <div className={style.buttonContainer}>
           <Button onClick={editHandler} className={style.button}>
-            <img src="" /> 
-            {/* nnti pasang gambar */}
+            <img
+              src="https://icons-for-free.com/download-icon-pencil-1324438838284694541_256.ico"
+              className="w-5 h-5"
+            />
           </Button>
-          <Button className={style.button}>
-            <img src="" />
+          <Button className={style.button} onClick={deleteHandler}>
+            <img
+              src="https://www.shareicon.net/data/256x256/2016/01/19/705545_recycle-bin_512x512.png"
+              className="w-5 h-5"
+            />
           </Button>
         </div>
       </li>
