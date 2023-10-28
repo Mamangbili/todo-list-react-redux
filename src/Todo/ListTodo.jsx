@@ -1,6 +1,6 @@
-import { ListItem } from "../../App";
-import { useFilter } from "../../context/filter-context";
-import useTodo from "../../storage/useTodo";
+import { ListItem } from "./ListItem";
+import { useFilter } from "./../context/constant";
+import { useTodo } from "./../storage/useTodo";
 
 const TodoList = () => {
   const { todo, dispatcher } = useTodo();

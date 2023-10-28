@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
-import { createContext, useContext, useState } from "react";
-
-const filterContext = createContext();
+import {  useState } from "react";
+import { filterContext } from "./constant";
 
 const FilterProvider = ({ children }) => {
   const [filterState, setFilterState] = useState("ALL");
@@ -15,9 +14,4 @@ const FilterProvider = ({ children }) => {
   );
 };
 
-const useFilter = () => {
-  const context = useContext(filterContext);
-  return context;
-};
-
-export { FilterProvider, useFilter };
+export default FilterProvider
