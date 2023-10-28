@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import Button from "./Button";
 import Modal from "./Modal";
 
@@ -49,8 +50,6 @@ export const ListItem = ({ data, dispatcher }) => {
     style.todo += " line-through ";
     todoText = <p className={style.todo}>{data.todo}</p>;
   }
-  console.log(todoText);
-  console.log(style.todo);
   //method
   //pake fn biasa agar bisa di hoisting
   function onEnter(e) {
@@ -116,4 +115,13 @@ export const ListItem = ({ data, dispatcher }) => {
       </li>
     </>
   );
+};
+
+ListItem.propTypes = {
+  data: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    status: PropTypes.oneOf(["ACTIVE", "COMPLETED"]),
+    todo: PropTypes.string.isRequired,
+  }).isRequired,
+  dispatcher: PropTypes.func.isRequired,
 };

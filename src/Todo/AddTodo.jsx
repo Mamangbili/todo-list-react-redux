@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from 'prop-types'
 import Button from "./Button";
 
 const style = {
@@ -37,3 +38,7 @@ export const AddTodo = ({ todoDispatcher }) => {
     </>
   );
 };
+
+AddTodo.propTypes = {
+todoDispatcher: PropTypes.func.isRequired
+}

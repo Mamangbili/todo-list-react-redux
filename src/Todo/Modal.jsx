@@ -1,5 +1,5 @@
 import Button from "./Button";
-
+import PropTypes from "prop-types"
 export const Modal = ({ ok, cancel, title, description }) => {
   const style = {
     container:
@@ -31,3 +31,10 @@ export const Modal = ({ ok, cancel, title, description }) => {
   );
 };
 export default Modal;
+Modal.propTypes = {
+  title : PropTypes.string.isRequired,
+  description : PropTypes.string.isRequired,
+  ok : PropTypes.func.isRequired,
+  cancel : PropTypes.func.isRequired
+  
+}

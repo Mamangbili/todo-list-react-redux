@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import PropTypes from 'prop-types'
 import {  useState } from "react";
 import { filterContext } from "./constant";
 
@@ -15,3 +16,7 @@ const FilterProvider = ({ children }) => {
 };
 
 export default FilterProvider
+
+FilterProvider.propTypes= {
+children : PropTypes.arrayOf(PropTypes.element).isRequired
+}
