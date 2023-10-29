@@ -44,7 +44,7 @@ export const ListItem = ({ data, action }) => {
     );
   }
   if (status) {
-    //ini masih bisa karena Component dipanggil ketika render
+    //ini masih bisa karena Component dipanggil dibawah
     style.buttonContainer += " hidden";
     //ini harus dibuat ulang karena Component sudah dibuat sebelumnya sehingga sulit untuk di mutate
     style.todo += " line-through ";
@@ -70,7 +70,7 @@ export const ListItem = ({ data, action }) => {
   function editHandler() {
     setOnEdit((prev) => !prev);
     const savedNow = onEdit;
-    // masuk dari mode edit ke saved. pake value sebelum update render
+    // masuk dari mode edit ke saved. pake value sebelum update, sehingga tidak perlu useEffect 
     if (savedNow) edited();
   }
 
